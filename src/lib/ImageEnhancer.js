@@ -20,10 +20,9 @@ export class ImageEnhancer {
     this._initialized = false;
   }
 
-  async init(onProgress) {
+  async init() {
     if (this._initialized) return;
-    await this._model.init(onProgress);
-    if (onProgress) onProgress('worker');
+    await this._model.init();
     this._worker = new Worker(new URL('./worker.js', import.meta.url));
     this._worker.onmessage = (e) => this._handleWorkerMessage(e);
     this._worker.onerror = (e) => this._handleWorkerError(e);
