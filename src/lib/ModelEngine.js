@@ -1,4 +1,4 @@
-import * as tf from '@tensorflow/tfjs';
+let tf;
 
 /**
  * HDRnet-inspired architecture (Deep Bilateral Learning, SIGGRAPH 2017).
@@ -62,6 +62,9 @@ export class ModelEngine {
       if (onProgress) onProgress(stage);
       return new Promise((r) => setTimeout(r, 0));
     };
+
+    await report('loading');
+    tf = await import('@tensorflow/tfjs');
 
     await report('backend');
     try {

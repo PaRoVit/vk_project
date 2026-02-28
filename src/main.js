@@ -28,6 +28,7 @@ const initStage = overlay.querySelector('.init-stage');
 const initDetail = overlay.querySelector('.init-detail');
 
 const stageLabels = {
+  loading:  'Loading TensorFlow.js...',
   backend:  'Initializing WebGL...',
   build:    'Building HDRnet model...',
   weights:  'Setting up weights...',
