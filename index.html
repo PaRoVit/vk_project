@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Image Enhancer</title>
+</head>
+<body>
+
+  <div class="init-overlay">
+    <div class="spinner"></div>
+    <p>Loading AI model...</p>
+  </div>
+
+  <div class="app">
+    <header>
+      <h1>AI Image Enhancer</h1>
+      <p>Upload an image and let the HDRnet neural network predict locally-adaptive colour corrections.</p>
+    </header>
+
+    <div class="dropzone">
+      <div class="dropzone-icon">&#128444;</div>
+      <h2>Drop your image here</h2>
+      <p>or click to browse &mdash; JPG, PNG, HEIC, BMP supported</p>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/heic,image/heif,image/bmp" />
+    </div>
+
+    <div class="status-bar">
+      <div class="status-row">
+        <span class="status-label">Status</span>
+        <span class="status-value">Waiting...</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill"></div>
+      </div>
+      <button class="cancel-btn">Cancel</button>
+    </div>
+
+    <div class="params-card">
+      <h3>AI-Selected Parameters</h3>
+      <div class="params-grid">
+        <div class="param-item">
+          <span class="label">Brightness</span>
+          <span class="value" id="paramBrightness">—</span>
+        </div>
+        <div class="param-item">
+          <span class="label">Contrast</span>
+          <span class="value" id="paramContrast">—</span>
+        </div>
+        <div class="param-item">
+          <span class="label">Saturation</span>
+          <span class="value" id="paramSaturation">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-header">
+        <h3>Result</h3>
+        <button class="download-btn">Download Enhanced Image</button>
+      </div>
+      <div class="comparison-grid">
+        <div class="image-panel">
+          <span class="panel-label">Original</span>
+          <img id="originalImg" alt="Original" />
+        </div>
+        <div class="image-panel">
+          <span class="panel-label">Enhanced</span>
+          <img id="enhancedImg" alt="Enhanced" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
