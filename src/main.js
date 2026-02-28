@@ -4,7 +4,8 @@ import { ImageEnhancer } from './lib/index.js';
 const enhancer = new ImageEnhancer();
 
 const $ = (sel) => document.querySelector(sel);
-const overlay = $('.init-overlay');
+const banner = $('#initBanner');
+const bannerText = banner.querySelector('.init-banner-text');
 const dropzone = $('.dropzone');
 const fileInput = $('#fileInput');
 const statusBar = $('.status-bar');
@@ -23,9 +24,8 @@ const downloadBtn = $('.download-btn');
 let currentTaskId = null;
 let originalObjectURL = null;
 let enhancedBlobURL = null;
-
-const initStage = overlay.querySelector('.init-stage');
-const initDetail = overlay.querySelector('.init-detail');
+let modelReady = false;
+let queuedFile = null;
 
 const stageLabels = {
   loading:  'Loading TensorFlow.js...',
@@ -39,12 +39,21 @@ const stageLabels = {
 async function initApp() {
   try {
     await enhancer.init((stage) => {
-      initStage.textContent = stageLabels[stage] || stage;
+      bannerText.textContent = stageLabels[stage] || stage;
     });
-    overlay.classList.add('hidden');
+    modelReady = true;
+    banner.classList.add('ready');
+    bannerText.textContent = 'AI model ready';
+    setTimeout(() => banner.classList.add('hidden'), 2000);
+
+    if (queuedFile) {
+      const file = queuedFile;
+      queuedFile = null;
+      handleFile(file);
+    }
   } catch (err) {
-    initStage.textContent = 'Initialization failed';
-    initDetail.textContent = err.message;
+    banner.classList.add('error');
+    bannerText.textContent = `Init failed: ${err.message}`;
     console.error(err);
   }
 }
@@ -118,6 +127,14 @@ async function showResult() {
 
 async function handleFile(file) {
   if (!file) return;
+
+  if (!modelReady) {
+    queuedFile = file;
+    statusBar.classList.add('visible');
+    statusLabel.textContent = 'Waiting for AI model to load...';
+    progressFill.style.width = '0%';
+    return;
+  }
 
   resetUI();
 
