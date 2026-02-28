@@ -311,9 +311,16 @@ header p {
   to { transform: rotate(360deg); }
 }
 
-.init-overlay p {
+.init-overlay .init-stage {
   font-size: 15px;
   color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.init-overlay .init-detail {
+  font-size: 13px;
+  color: var(--color-error);
+  margin-top: 6px;
 }
 
 /* Responsive */

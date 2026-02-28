@@ -57,7 +57,13 @@ export class ModelEngine {
     this.gridD = GRID_D;
   }
 
-  async init() {
+  async init(onProgress) {
+    const report = (stage) => {
+      if (onProgress) onProgress(stage);
+      return new Promise((r) => setTimeout(r, 0));
+    };
+
+    await report('backend');
     try {
       await tf.setBackend('webgl');
       await tf.ready();
@@ -66,9 +72,19 @@ export class ModelEngine {
       await tf.ready();
     }
 
+    await report('build');
     this.model = this._buildModel();
+
+    await report('weights');
     this._initGridOutputLayer();
     this._initFirstConvLayer();
+
+    await report('warmup');
+    tf.tidy(() => {
+      const dummy = tf.zeros([1, INPUT_SIZE, INPUT_SIZE, 3]);
+      this.model.predict(dummy);
+    });
+
     this.ready = true;
   }
 
@@ -108,9 +124,7 @@ export class ModelEngine {
       name: 'grid_output',
     }).apply(fused);
 
-    const model = tf.model({ inputs: input, outputs: gridOutput });
-    model.compile({ optimizer: tf.train.adam(0.001), loss: 'meanSquaredError' });
-    return model;
+    return tf.model({ inputs: input, outputs: gridOutput });
   }
 
   _convBnRelu(x, filters, kernelSize, strides, name) {
@@ -324,6 +338,9 @@ export class ModelEngine {
    *   gridTarget is a flat 16×16×8×12 array of desired affine coefficients.
    */
   async train(samples, { epochs = 50, batchSize = 4, onEpochEnd } = {}) {
+    if (!this.model.optimizer) {
+      this.model.compile({ optimizer: tf.train.adam(0.001), loss: 'meanSquaredError' });
+    }
     const xs = tf.tidy(() =>
       tf.stack(samples.map(s =>
         tf.browser.fromPixels(s.image).toFloat().div(255.0)
@@ -348,7 +365,6 @@ export class ModelEngine {
 
   async loadModel(path) {
     this.model = await tf.loadLayersModel(path);
-    this.model.compile({ optimizer: tf.train.adam(0.001), loss: 'meanSquaredError' });
     this.ready = true;
   }
 

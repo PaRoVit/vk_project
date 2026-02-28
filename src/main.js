@@ -24,12 +24,26 @@ let currentTaskId = null;
 let originalObjectURL = null;
 let enhancedBlobURL = null;
 
+const initStage = overlay.querySelector('.init-stage');
+const initDetail = overlay.querySelector('.init-detail');
+
+const stageLabels = {
+  backend:  'Initializing WebGL...',
+  build:    'Building HDRnet model...',
+  weights:  'Setting up weights...',
+  warmup:   'Warming up GPU...',
+  worker:   'Starting worker...',
+};
+
 async function initApp() {
   try {
-    await enhancer.init();
+    await enhancer.init((stage) => {
+      initStage.textContent = stageLabels[stage] || stage;
+    });
     overlay.classList.add('hidden');
   } catch (err) {
-    overlay.querySelector('p').textContent = `Initialization failed: ${err.message}`;
+    initStage.textContent = 'Initialization failed';
+    initDetail.textContent = err.message;
     console.error(err);
   }
 }
