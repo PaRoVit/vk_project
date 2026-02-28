@@ -1,5 +1,18 @@
 let tf;
 
+const TF_CDN = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js';
+
+function loadTf() {
+  return new Promise((resolve, reject) => {
+    if (window.tf) { resolve(window.tf); return; }
+    const script = document.createElement('script');
+    script.src = TF_CDN;
+    script.onload = () => resolve(window.tf);
+    script.onerror = () => reject(new Error('Failed to load TensorFlow.js from CDN'));
+    document.head.appendChild(script);
+  });
+}
+
 /**
  * HDRnet-inspired architecture (Deep Bilateral Learning, SIGGRAPH 2017).
  *
@@ -62,7 +75,7 @@ export class ModelEngine {
     };
 
     await report('loading');
-    tf = await import('@tensorflow/tfjs');
+    tf = await loadTf();
 
     await report('backend');
     try {
