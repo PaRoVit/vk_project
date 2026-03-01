@@ -1,21 +1,4 @@
-import { TF_CDN_URL } from './tfConfig.js';
-
-let tf;
-
-function loadTf() {
-  return new Promise((resolve, reject) => {
-    if (window.tf) {
-      resolve(window.tf);
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = TF_CDN_URL;
-    script.onload = () => resolve(window.tf);
-    script.onerror = () =>
-      reject(new Error('Не удалось загрузить TensorFlow.js'));
-    document.head.appendChild(script);
-  });
-}
+import * as tf from '@tensorflow/tfjs';
 
 /**
  * HDRnet-inspired architecture (Deep Bilateral Learning, SIGGRAPH 2017).
@@ -75,8 +58,6 @@ export class ModelEngine {
   }
 
   async init() {
-    tf = await loadTf();
-
     try {
       await tf.setBackend('webgl');
       await tf.ready();
